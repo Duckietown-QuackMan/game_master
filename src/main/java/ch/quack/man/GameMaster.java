@@ -6,6 +6,7 @@ import ch.quack.man.communication.QuackManEndpoint;
 import ch.quack.man.communication.model.CheckpointMsg;
 import ch.quack.man.communication.model.DetectionMsg;
 import ch.quack.man.communication.model.ScoreMsg;
+import ch.quack.man.communication.model.TimeoutMsg;
 import org.glassfish.tyrus.server.Server;
 
 import javax.websocket.DeploymentException;
@@ -45,6 +46,7 @@ public class GameMaster {
 
         // 2. Gather inputs
         boolean quackManDetected = gameState.isQuackManDetected();
+        boolean checkpointTimeout = gameState.isCheckpointTimeout();
         boolean allCheckpointsCollected = gameState.areAllCheckpointsCollected();
 
         // 3. Update game state
@@ -53,7 +55,7 @@ public class GameMaster {
                 gameState.setState(handleIdleState(quackManConnected, ghostBotsConnected));
                 break;
             case RUNNING:
-                gameState.setState(handleRunningState(quackManDetected, allCheckpointsCollected));
+                gameState.setState(handleRunningState(quackManDetected, allCheckpointsCollected, checkpointTimeout));
                 break;
             case GAME_OVER:
                 gameState.setState(handleGameOverState());
@@ -78,8 +80,8 @@ public class GameMaster {
         }
     }
 
-    private GameState.State handleRunningState(boolean quackManDetected, boolean allCheckpointsCollected) {
-        if (quackManDetected) {
+    private GameState.State handleRunningState(boolean quackManDetected, boolean allCheckpointsCollected, boolean checkpointTimeout) {
+        if (quackManDetected || checkpointTimeout) {
             return GameState.State.GAME_OVER;
         } else if (allCheckpointsCollected) {
             return GameState.State.GAME_WON;
@@ -118,6 +120,10 @@ public class GameMaster {
         gameState.setAllCheckpointsCollected(checkpointMsg.allCheckpointsCollected());
     }
 
+    private void checkpointTimeoutCallback(TimeoutMsg timeoutMsg) {
+        gameState.setCheckpointTimeout(timeoutMsg.checkpointTimeout());
+    }
+
     private void detectionCallback(DetectionMsg detectionMsg) {
         gameState.setQuackManDetected(detectionMsg.detected());
     }
@@ -126,6 +132,7 @@ public class GameMaster {
         this.quackMan = quackMan;
         quackMan.setScoreCallback(this::scoreUpdateCallback);
         quackMan.setCheckpointCallback(this::allCheckpointsCollectedCallback);
+        quackMan.setCheckpointTimeoutCallback(this::checkpointTimeoutCallback);
     }
 
     public void deregisterQuackMan(BotInterface quackMan) {

@@ -4,6 +4,7 @@ import ch.quack.man.GameState;
 import ch.quack.man.communication.model.CheckpointMsg;
 import ch.quack.man.communication.model.DetectionMsg;
 import ch.quack.man.communication.model.ScoreMsg;
+import ch.quack.man.communication.model.TimeoutMsg;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ public class BotInterface {
     private final Session websocketSession;
     private Consumer<ScoreMsg> scoreCallback;
     private Consumer<CheckpointMsg> checkpointCallback;
+    private Consumer<TimeoutMsg> checkpointTimeoutCallback;
     private Consumer<DetectionMsg> detectionMsgConsumer;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -75,6 +77,11 @@ public class BotInterface {
                     detectionMsgConsumer.accept(objectMapper.convertValue(msg.get("data"), DetectionMsg.class));
                 }
                 break;
+            case "timeout":
+                if (checkpointTimeoutCallback != null) {
+                    checkpointTimeoutCallback.accept(objectMapper.convertValue(msg.get("data"), TimeoutMsg.class));
+                }
+                break;
             default:
                 LOGGER.warning("Received message with unknown type: " + message);
         }
@@ -86,6 +93,10 @@ public class BotInterface {
 
     public void setCheckpointCallback(Consumer<CheckpointMsg> checkpointCallback) {
         this.checkpointCallback = checkpointCallback;
+    }
+
+    public void setCheckpointTimeoutCallback(Consumer<TimeoutMsg> checkpointTimeoutCallback) {
+        this.checkpointTimeoutCallback = checkpointTimeoutCallback;
     }
 
     public void setDetectionMsgConsumer(Consumer<DetectionMsg> detectionMsgConsumer) {

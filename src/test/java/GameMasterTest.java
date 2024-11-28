@@ -84,6 +84,29 @@ public class GameMasterTest {
     }
 
     @Test
+    void testCheckpointTimeoutGameOver() {
+        GameMaster gameMaster = GameMaster.initialize(0);
+        gameMaster.gameLoopIteration();
+
+        MockBot quackman = Utils.connectQuackMan(msg -> {});
+
+        gameMaster.gameLoopIteration();
+
+        quackman.handleMsg("""
+                {
+                    "type": "TIMEOUT",
+                    "bot": "APRICOT",
+                    "data": {
+                        "checkpointTimeout": true
+                    }
+                }
+                """);
+        gameMaster.gameLoopIteration();
+
+        assertEquals(GameState.State.GAME_OVER, gameMaster.getCurrentState().getState(), "Game should be over because of checkpoint timeout");
+    }
+
+    @Test
     void testGameStateBroadcast() {
         GameMaster gameMaster = GameMaster.initialize(1);
         gameMaster.gameLoopIteration();

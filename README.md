@@ -56,6 +56,16 @@ The QuackMan can also inform the game master when it collected all checkpoints:
   }
 }
 ```
+If the QuackMan doesn't collect a new checkpoint within the deadline, he can inform the game master that therefor the game is lost.
+```json
+{
+  "bot": "APRICOT",
+  "type": "TIMEOUT",
+  "data": {
+    "checkpointTimeout": true
+  }
+}
+```
 
 ## GhostBot
 GhostBot must connect to `ws://localhost:8080/ghostbot`.

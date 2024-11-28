@@ -11,6 +11,7 @@ public class GameState {
 
     private volatile int points = 0;
     private volatile boolean allCheckpointsCollected = false;
+    private volatile boolean checkpointTimeout = false;
     private volatile boolean quackManDetected = false;
     private State state = State.IDLE;
 
@@ -32,6 +33,14 @@ public class GameState {
 
     public boolean isQuackManDetected() {
         return quackManDetected;
+    }
+
+    public void setCheckpointTimeout(boolean checkpointTimeout) {
+        this.checkpointTimeout = checkpointTimeout;
+    }
+
+    public boolean isCheckpointTimeout() {
+        return checkpointTimeout;
     }
 
     public void setQuackManDetected(boolean quackManDetected) {
