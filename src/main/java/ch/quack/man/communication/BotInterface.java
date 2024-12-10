@@ -49,6 +49,7 @@ public class BotInterface {
     }
 
     public void handleMsg(String message) {
+        LOGGER.info(message);
         Map<String, Object> msg;
         try {
             msg = objectMapper.readValue(message, new TypeReference<HashMap<String,Object>>() {});

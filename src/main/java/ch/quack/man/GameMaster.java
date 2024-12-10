@@ -18,7 +18,7 @@ public class GameMaster {
 
     private static final Logger LOGGER = Logger.getLogger(GameMaster.class.getName());
 
-    private static final int LOOP_FREQUENCY = 10;
+    private static final int LOOP_FREQUENCY = 1;
 
     private static GameMaster instance;
 
