@@ -79,3 +79,30 @@ GhostBots can inform the game master when they detected QuackMan:
   }
 }
 ```
+
+
+### Communication flow
+```mermaid
+sequenceDiagram
+    participant QuackMan
+    participant GameMaster
+    participant GhostBot
+    
+    Note over GameMaster, QuackMan: QuackMan connects to GameMaster
+
+    GameMaster->>QuackMan: Game IDLE
+    GameMaster->>GhostBot: Game IDLE
+    
+    Note over GhostBot, GameMaster: GhostBot connects to GameMaster
+    
+    loop Game running
+        GameMaster->>QuackMan: Game RUNNING
+        GameMaster->>GhostBot: Game RUNNING
+        QuackMan ->> GameMaster: Score *
+    end
+    
+    GhostBot ->> GameMaster: Detection
+    
+    GameMaster->>QuackMan: Game GAME_OVER
+    GameMaster->>GhostBot: Game GAME_OVER
+```
